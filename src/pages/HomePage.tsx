@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAppContext, APP_LOGO_URL, CONTACT_WHATSAPP, CONTACT_WHATSAPP_LINK } from '../App';
-import { isBackendConfigured } from '../services/api';
-import { Trophy, Users, Calendar, Phone, CheckCircle, XCircle, ArrowRight, Info, MessageCircle } from 'lucide-react';
+import { Trophy, Users, Calendar, Phone, CheckCircle, XCircle, ArrowRight, MessageCircle } from 'lucide-react';
 
 export default function HomePage() {
   const { settings } = useAppContext();
@@ -37,17 +36,15 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Demo Mode Banner */}
-      {!isBackendConfigured && (
-        <div className="bg-amber-50 border-b border-amber-200 px-4 py-3">
-          <div className="max-w-7xl mx-auto flex items-center gap-2">
-            <Info className="w-4 h-4 text-amber-600 flex-shrink-0" />
-            <p className="text-xs sm:text-sm text-amber-800">
-              <strong>Mode Demo:</strong> Aplikasi berjalan dalam mode demonstrasi. Untuk penyimpanan data permanen, hubungkan ke backend API. Lihat README.md untuk panduan deployment.
-            </p>
-          </div>
+      {/* Database Connected Banner */}
+      <div className="bg-green-50 border-b border-green-200 px-4 py-2">
+        <div className="max-w-7xl mx-auto flex items-center gap-2 justify-center">
+          <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+          <p className="text-xs text-green-700">
+            <strong>Terhubung ke Database:</strong> Data tersimpan permanen di Neon PostgreSQL
+          </p>
         </div>
-      )}
+      </div>
 
       {/* Hero Section */}
       <section className="relative overflow-hidden">

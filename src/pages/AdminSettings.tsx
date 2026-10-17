@@ -6,7 +6,7 @@ import { Save, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 
 export default function AdminSettings() {
   const { settings, setSettings } = useAppContext();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [form, setForm] = useState({
@@ -44,7 +44,10 @@ export default function AdminSettings() {
         setForm(newForm);
         setSettings({ ...settings, ...newForm });
       }
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.error(err);
+      setMessage('Gagal memuat pengaturan dari database.');
+    }
     finally { setLoading(false); }
   };
 

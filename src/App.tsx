@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useState, createContext, useContext } from 'react';
+import { useState, createContext, useContext, useEffect } from 'react';
 import HomePage from './pages/HomePage';
 import RegistrationPage from './pages/RegistrationPage';
 import CheckStatusPage from './pages/CheckStatusPage';
@@ -10,6 +10,7 @@ import AdminRegistrations from './pages/AdminRegistrations';
 import AdminTeams from './pages/AdminTeams';
 import AdminPlayers from './pages/AdminPlayers';
 import AdminSettings from './pages/AdminSettings';
+import { initializeApp } from './services/api';
 
 // App logo URL
 export const APP_LOGO_URL = 'https://img.sanishtech.com/u/4139abe5f1ad93ba9a1f348e5b1a34da.jpg';
@@ -64,6 +65,60 @@ function App() {
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminToken, setAdminToken] = useState('');
+  const [dbReady, setDbReady] = useState(false);
+  const [dbError, setDbError] = useState<string | null>(null);
+
+  // Initialize database on first load
+  useEffect(() => {
+    initializeApp().then(result => {
+      if (result.success) {
+        setDbReady(true);
+      } else {
+        setDbError(result.error || 'Gagal menghubungkan ke database');
+      }
+    });
+  }, []);
+
+  // Show loading while database is initializing
+  if (!dbReady && !dbError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-emerald-50 to-blue-50">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto bg-gradient-to-br from-green-400 to-emerald-600 rounded-3xl flex items-center justify-center mb-4 animate-pulse">
+            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+            </svg>
+          </div>
+          <h2 className="font-display font-bold text-xl text-gray-900 mb-2">Menghubungkan ke Database...</h2>
+          <p className="text-gray-500 text-sm">Mohon tunggu sebentar</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if database connection failed
+  if (dbError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-emerald-50 to-blue-50 p-4">
+        <div className="glass-card rounded-2xl p-8 max-w-md text-center card-shadow">
+          <div className="w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-4">
+            <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h2 className="font-display font-bold text-xl text-gray-900 mb-2">Gagal Menghubungkan ke Database</h2>
+          <p className="text-gray-500 text-sm mb-4">{dbError}</p>
+          <p className="text-xs text-gray-400 mb-6">Pastikan koneksi internet stabil dan database Neon dapat diakses.</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="btn-primary inline-flex items-center gap-2"
+          >
+            Coba Lagi
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <AppContext.Provider value={{ settings, setSettings, isAdmin, setIsAdmin, adminToken, setAdminToken }}>

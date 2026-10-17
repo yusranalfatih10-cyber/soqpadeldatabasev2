@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAppContext, APP_LOGO_URL } from '../App';
-import { adminApi, isBackendConfigured } from '../services/api';
+import { adminApi } from '../services/api';
 import { Lock, User, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
 
 export default function AdminLoginPage() {
@@ -60,12 +60,10 @@ export default function AdminLoginPage() {
             <p className="text-gray-500 text-sm mt-1">SOQ.COMM PADEL LEAGUE</p>
           </div>
 
-          {!isBackendConfigured && (
-            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-xl">
-              <p className="text-xs text-blue-700 font-medium">Mode Demo - Gunakan kredensial:</p>
-              <p className="text-xs text-blue-600">Username: <code className="bg-blue-100 px-1 rounded">admin</code> | Password: <code className="bg-blue-100 px-1 rounded">admin123</code></p>
-            </div>
-          )}
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-xl">
+            <p className="text-xs text-blue-700 font-medium">Kredensial Default:</p>
+            <p className="text-xs text-blue-600">Username: <code className="bg-blue-100 px-1 rounded">admin</code> | Password: <code className="bg-blue-100 px-1 rounded">admin123</code></p>
+          </div>
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div>

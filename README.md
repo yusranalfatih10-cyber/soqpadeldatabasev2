@@ -76,10 +76,11 @@ Aplikasi ini dirancang sebagai sistem pendaftaran resmi untuk **SOQ.COMM PADEL L
 | express-rate-limit | 7.1.4 | Rate limiting |
 
 ### Layanan Eksternal
-- **Neon PostgreSQL** - Database cloud gratis
-- **Cloudinary** - Penyimpanan gambar gratis
-- **Render** - Hosting backend gratis
+- **Neon PostgreSQL** - Database cloud (sudah terhubung langsung)
+- **Cloudinary** - Penyimpanan gambar (opsional, fallback ke base64)
 - **Vercel / Z.ai** - Hosting frontend
+
+**Catatan:** Aplikasi ini terhubung langsung ke database Neon PostgreSQL dari browser menggunakan Neon Serverless Driver. Tidak memerlukan backend terpisah!
 
 ---
 
