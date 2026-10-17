@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
-import { teamsApi, API_CONFIG } from '../services/api';
+import { teamsApi } from '../services/api';
 import { ArrowLeft, ArrowRight, Trophy, User, Users, Plus, X, Camera, Upload, CheckCircle, AlertCircle, Loader2, Image as ImageIcon } from 'lucide-react';
 
 interface PlayerData {
@@ -35,12 +35,12 @@ export default function RegistrationPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [submitted, setSubmitted] = useState(false);
 
   // Team data
   const [teamName, setTeamName] = useState('');
   const [captainName, setCaptainName] = useState('');
   const [captainPhone, setCaptainPhone] = useState('');
-  const [captainEmail, setCaptainEmail] = useState('');
   const [city, setCity] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -52,8 +52,6 @@ export default function RegistrationPage() {
 
   // Photo upload refs
   const photoInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
-
-  const totalSteps = 3;
 
   if (!settings.registration_open) {
     return (
@@ -117,11 +115,16 @@ export default function RegistrationPage() {
 
   const addPlayer = () => {
     if (players.length >= settings.max_players) {
-      setError(`Maksimal ${settings.max_players} pemain per tim.`);
+      setError(`Jumlah maksimal ${settings.max_players} pemain per tim telah tercapai.`);
       return;
     }
-    setPlayers([...players, createEmptyPlayer()]);
-    setEditingPlayer(players[players.length - 1]?.id || null);
+    const newPlayer = createEmptyPlayer();
+    setPlayers(prev => {
+      const updated = [...prev, newPlayer];
+      // Set the new player as editing - use the new player's ID directly
+      setEditingPlayer(newPlayer.id);
+      return updated;
+    });
     setError('');
   };
 
@@ -130,7 +133,10 @@ export default function RegistrationPage() {
       setError(`Minimal ${settings.min_players} pemain per tim.`);
       return;
     }
-    setPlayers(players.filter(p => p.id !== id));
+    setPlayers(prev => prev.filter(p => p.id !== id));
+    if (editingPlayer === id) {
+      setEditingPlayer(null);
+    }
     setError('');
   };
 
@@ -152,17 +158,36 @@ export default function RegistrationPage() {
       setError(`Minimal ${settings.min_players} pemain harus ditambahkan.`);
       return false;
     }
-    for (const p of players) {
-      if (!p.full_name.trim()) { setError(`Nama lengkap pemain harus diisi.`); return false; }
-      if (!p.gender) { setError(`Jenis kelamin pemain harus dipilih.`); return false; }
-      if (!p.playing_position) { setError(`Posisi bermain pemain harus dipilih.`); return false; }
-      if (!p.photo_file && !p.photo_url) { setError(`Foto pemain "${p.full_name}" wajib diunggah.`); return false; }
+    for (let i = 0; i < players.length; i++) {
+      const p = players[i];
+      if (!p.full_name.trim()) { setError(`Nama lengkap Pemain ${i + 1} harus diisi.`); return false; }
+      if (!p.gender) { setError(`Jenis kelamin Pemain ${i + 1} (${p.full_name}) harus dipilih.`); return false; }
+      if (!p.playing_position) { setError(`Posisi bermain Pemain ${i + 1} (${p.full_name}) harus dipilih.`); return false; }
+      if (!p.photo_file) { setError(`Foto Pemain ${i + 1} (${p.full_name}) wajib diunggah.`); return false; }
     }
     setError('');
     return true;
   };
 
   const handleSubmit = async () => {
+    // Prevent double submission
+    if (submitted || loading) return;
+    
+    // Final validation
+    if (!teamName.trim() || !captainName.trim() || !captainPhone.trim() || !city.trim()) {
+      setError('Data tim tidak lengkap. Silakan kembali dan lengkapi data.');
+      return;
+    }
+    
+    for (let i = 0; i < players.length; i++) {
+      const p = players[i];
+      if (!p.full_name.trim() || !p.gender || !p.playing_position || !p.photo_file) {
+        setError(`Data Pemain ${i + 1} (${p.full_name || 'belum diisi'}) tidak lengkap. Silakan kembali dan lengkapi.`);
+        return;
+      }
+    }
+
+    setSubmitted(true);
     setLoading(true);
     setError('');
 
@@ -171,17 +196,16 @@ export default function RegistrationPage() {
       formData.append('team_name', teamName);
       formData.append('captain_name', captainName);
       formData.append('captain_phone', captainPhone);
-      formData.append('captain_email', captainEmail);
       formData.append('city', city);
       if (logoFile) formData.append('team_logo', logoFile);
       
       players.forEach((player, index) => {
         formData.append(`players[${index}][full_name]`, player.full_name);
-        formData.append(`players[${index}][nickname]`, player.nickname);
-        formData.append(`players[${index}][phone]`, player.phone);
+        formData.append(`players[${index}][nickname]`, player.nickname || '');
+        formData.append(`players[${index}][phone]`, player.phone || '');
         formData.append(`players[${index}][gender]`, player.gender);
         formData.append(`players[${index}][playing_position]`, player.playing_position);
-        formData.append(`players[${index}][player_strength]`, player.player_strength);
+        formData.append(`players[${index}][player_strength]`, player.player_strength || '');
         if (player.photo_file) {
           formData.append(`players[${index}][photo]`, player.photo_file);
         }
@@ -193,10 +217,13 @@ export default function RegistrationPage() {
         const regNumber = (response.data as any).registration_number;
         navigate(`/success/${regNumber}`);
       } else {
-        setError(response.error || 'Gagal mengirim pendaftaran. Silakan coba lagi.');
+        setError(response.error || 'Gagal menyimpan pendaftaran. Silakan coba kembali.');
+        setSubmitted(false);
       }
     } catch (err) {
-      setError('Terjadi kesalahan. Silakan coba lagi.');
+      console.error('Submit error:', err);
+      setError('Koneksi ke server bermasalah. Silakan coba kembali.');
+      setSubmitted(false);
     } finally {
       setLoading(false);
     }
@@ -248,11 +275,6 @@ export default function RegistrationPage() {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp Kapten *</label>
           <input type="tel" className="input-field" placeholder="08xxxxxxxxxx" value={captainPhone} onChange={e => setCaptainPhone(e.target.value)} />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email Kapten (Opsional)</label>
-          <input type="email" className="input-field" placeholder="email@example.com" value={captainEmail} onChange={e => setCaptainEmail(e.target.value)} />
         </div>
 
         <div>
@@ -416,10 +438,14 @@ export default function RegistrationPage() {
         ))}
       </div>
 
-      {players.length < settings.max_players && (
+      {players.length < settings.max_players ? (
         <button onClick={addPlayer} className="mt-4 w-full py-4 border-2 border-dashed border-green-300 rounded-xl text-green-600 hover:bg-green-50 transition-colors flex items-center justify-center gap-2 font-medium">
           <Plus className="w-5 h-5" /> TAMBAH PEMAIN LAGI
         </button>
+      ) : (
+        <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl text-center">
+          <p className="text-sm text-amber-700 font-medium">Jumlah maksimal {settings.max_players} pemain per tim telah tercapai.</p>
+        </div>
       )}
 
       <div className="mt-8 flex justify-between">
@@ -467,19 +493,13 @@ export default function RegistrationPage() {
             <p className="text-xs text-gray-500 uppercase">WhatsApp</p>
             <p className="font-medium text-gray-900">{captainPhone}</p>
           </div>
-          {captainEmail && (
-            <div>
-              <p className="text-xs text-gray-500 uppercase">Email</p>
-              <p className="font-medium text-gray-900">{captainEmail}</p>
-            </div>
-          )}
           <div>
             <p className="text-xs text-gray-500 uppercase">Jumlah Pemain</p>
             <p className="font-medium text-gray-900">{players.length} pemain</p>
           </div>
         </div>
 
-        <h4 className="font-semibold text-gray-900 mb-3">Daftar Pemain:</h4>
+        <h4 className="font-semibold text-gray-900 mb-3">Daftar Pemain ({players.length}):</h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {players.map((player, i) => (
             <div key={player.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
@@ -491,7 +511,7 @@ export default function RegistrationPage() {
                 </div>
               )}
               <div>
-                <p className="font-medium text-sm text-gray-900">{player.full_name}</p>
+                <p className="font-medium text-sm text-gray-900">{i + 1}. {player.full_name}</p>
                 <p className="text-xs text-gray-500">{player.playing_position} • {player.gender}</p>
               </div>
             </div>
@@ -505,8 +525,15 @@ export default function RegistrationPage() {
         </p>
       </div>
 
-      <div className="flex justify-between">
-        <button onClick={() => setStep(2)} className="btn-secondary inline-flex items-center gap-2">
+      {error && (
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+          <p className="text-sm text-red-700">{error}</p>
+        </div>
+      )}
+
+      <div className="flex flex-col sm:flex-row justify-between gap-3">
+        <button onClick={() => setStep(2)} disabled={loading} className="btn-secondary inline-flex items-center justify-center gap-2 disabled:opacity-50">
           <ArrowLeft className="w-4 h-4" /> Kembali Edit
         </button>
         <button
@@ -515,8 +542,8 @@ export default function RegistrationPage() {
               handleSubmit();
             }
           }}
-          disabled={loading}
-          className="btn-primary inline-flex items-center gap-2 disabled:opacity-50"
+          disabled={loading || submitted}
+          className="btn-primary inline-flex items-center justify-center gap-2 disabled:opacity-50"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
           {loading ? 'Mengirim...' : 'KIRIM PENDAFTARAN'}
@@ -536,7 +563,7 @@ export default function RegistrationPage() {
         {renderProgressBar()}
 
         {/* Error/Success messages */}
-        {error && (
+        {error && step !== 3 && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 animate-fade-in">
             <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
             <p className="text-sm text-red-700">{error}</p>

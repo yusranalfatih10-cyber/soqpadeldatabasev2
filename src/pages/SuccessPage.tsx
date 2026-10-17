@@ -1,4 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
+import { APP_LOGO_URL, CONTACT_WHATSAPP, CONTACT_WHATSAPP_LINK } from '../App';
 import { CheckCircle, Printer, ArrowLeft, Trophy, Users, Calendar } from 'lucide-react';
 
 export default function SuccessPage() {
@@ -12,6 +13,19 @@ export default function SuccessPage() {
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-lg mx-auto">
         <div className="glass-card rounded-2xl p-8 card-shadow text-center animate-slide-up">
+          {/* App Logo */}
+          <div className="mb-4">
+            <img 
+              src={APP_LOGO_URL} 
+              alt="SOQ.COMM Padel League" 
+              className="w-16 h-16 mx-auto object-contain"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+              }}
+            />
+          </div>
+
           {/* Success Icon */}
           <div className="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-6">
             <CheckCircle className="w-10 h-10 text-green-600" />
@@ -85,7 +99,15 @@ export default function SuccessPage() {
 
         {/* Print-only section */}
         <div className="hidden print:block mt-8 p-8 border-2 border-gray-300 rounded-xl">
-          <h2 className="font-display font-bold text-xl text-center mb-4">BUKTI PENDAFTARAN</h2>
+          <div className="text-center mb-4">
+            <img 
+              src={APP_LOGO_URL} 
+              alt="SOQ.COMM Padel League" 
+              className="w-20 h-20 mx-auto object-contain mb-2"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+            />
+          </div>
+          <h2 className="font-display font-bold text-xl text-center mb-2">BUKTI PENDAFTARAN</h2>
           <h3 className="font-bold text-center mb-2">SOQ.COMM PADEL LEAGUE 2026</h3>
           <hr className="my-4" />
           <div className="space-y-2">
@@ -96,6 +118,9 @@ export default function SuccessPage() {
           <hr className="my-4" />
           <p className="text-sm text-gray-600 text-center mt-4">
             Dokumen ini adalah bukti pendaftaran resmi. Simpan dengan baik.
+          </p>
+          <p className="text-xs text-gray-500 text-center mt-2">
+            Kontak Panitia: {CONTACT_WHATSAPP}
           </p>
         </div>
       </div>

@@ -141,7 +141,8 @@ export default function AdminSettings() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Informasi Kontak Panitia</label>
-              <input type="text" className="input-field" value={form.contact_info} onChange={e => setForm({...form, contact_info: e.target.value})} />
+              <input type="text" className="input-field" placeholder="WhatsApp: +62 814-1227-4044" value={form.contact_info} onChange={e => setForm({...form, contact_info: e.target.value})} />
+              <p className="text-xs text-gray-400 mt-1">Contoh: WhatsApp: +62 814-1227-4044</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Informasi Pendaftaran</label>

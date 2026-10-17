@@ -127,7 +127,7 @@ export default function AdminRegistrations() {
                   <th className="text-left px-4 py-3 font-medium text-gray-600">No. Pendaftaran</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Tim</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600 hidden md:table-cell">Kapten</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600 hidden lg:table-cell">WhatsApp</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600 hidden lg:table-cell">Kontak</th>
                   <th className="text-center px-4 py-3 font-medium text-gray-600">Pemain</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600 hidden md:table-cell">Tanggal</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
@@ -222,8 +222,8 @@ export default function AdminRegistrations() {
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div><span className="text-gray-500">Kapten:</span><p className="font-medium">{selectedTeam.captain_name}</p></div>
                 <div><span className="text-gray-500">WhatsApp:</span><p className="font-medium">{selectedTeam.captain_phone}</p></div>
-                <div><span className="text-gray-500">Email:</span><p className="font-medium">{selectedTeam.captain_email || '-'}</p></div>
                 <div><span className="text-gray-500">Kota:</span><p className="font-medium">{selectedTeam.city}</p></div>
+                <div><span className="text-gray-500">Jumlah Pemain:</span><p className="font-medium">{selectedTeam.player_count || '-'}</p></div>
                 <div><span className="text-gray-500">Tanggal:</span><p className="font-medium">{new Date(selectedTeam.created_at).toLocaleString('id-ID')}</p></div>
                 <div><span className="text-gray-500">Status:</span><div className="mt-1">{getStatusBadge(selectedTeam.registration_status)}</div></div>
               </div>

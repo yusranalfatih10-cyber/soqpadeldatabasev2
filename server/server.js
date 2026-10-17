@@ -158,16 +158,15 @@ app.get('/api/teams/check-status', async (req, res) => {
 });
 
 // Register team (public)
+// Generate multer fields dynamically for up to 20 players
+const playerPhotoFields = [];
+for (let i = 0; i < 20; i++) {
+  playerPhotoFields.push({ name: `players[${i}][photo]`, maxCount: 1 });
+}
+
 app.post('/api/teams/register', registerLimiter, upload.fields([
   { name: 'team_logo', maxCount: 1 },
-  { name: 'players[0][photo]', maxCount: 1 },
-  { name: 'players[1][photo]', maxCount: 1 },
-  { name: 'players[2][photo]', maxCount: 1 },
-  { name: 'players[3][photo]', maxCount: 1 },
-  { name: 'players[4][photo]', maxCount: 1 },
-  { name: 'players[5][photo]', maxCount: 1 },
-  { name: 'players[6][photo]', maxCount: 1 },
-  { name: 'players[7][photo]', maxCount: 1 },
+  ...playerPhotoFields,
 ]), async (req, res) => {
   const client = await pool.connect();
   
@@ -194,7 +193,7 @@ app.post('/api/teams/register', registerLimiter, upload.fields([
     const maxPlayers = parseInt(maxPlayersResult.rows[0]?.setting_value) || 8;
 
     // Parse form data
-    const { team_name, captain_name, captain_phone, captain_email, city } = req.body;
+    const { team_name, captain_name, captain_phone, city } = req.body;
 
     // Validate required fields
     if (!team_name || !captain_name || !captain_phone || !city) {
@@ -212,9 +211,9 @@ app.post('/api/teams/register', registerLimiter, upload.fields([
       return res.status(409).json({ error: 'Nama tim sudah terdaftar. Gunakan nama yang berbeda.' });
     }
 
-    // Parse players from form data
+    // Parse players from form data (support up to 20 players)
     const players = [];
-    for (let i = 0; i < maxPlayers; i++) {
+    for (let i = 0; i < 20; i++) {
       const fullName = req.body[`players[${i}][full_name]`];
       if (!fullName) continue;
       
@@ -261,10 +260,10 @@ app.post('/api/teams/register', registerLimiter, upload.fields([
 
     // Insert team
     const teamResult = await client.query(
-      `INSERT INTO teams (registration_number, team_name, captain_name, captain_phone, captain_email, city, team_logo_url, team_logo_public_id, registration_status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'MENUNGGU_VERIFIKASI')
+      `INSERT INTO teams (registration_number, team_name, captain_name, captain_phone, city, team_logo_url, team_logo_public_id, registration_status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, 'MENUNGGU_VERIFIKASI')
        RETURNING id, registration_number`,
-      [registrationNumber, team_name, captain_name, captain_phone, captain_email || null, city, logoUrl, logoPublicId]
+      [registrationNumber, team_name, captain_name, captain_phone, city, logoUrl, logoPublicId]
     );
 
     const teamId = teamResult.rows[0].id;

@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
-import { useAppContext } from '../App';
+import { useAppContext, APP_LOGO_URL, CONTACT_WHATSAPP, CONTACT_WHATSAPP_LINK } from '../App';
 import { isBackendConfigured } from '../services/api';
-import { Trophy, Users, Calendar, Phone, Mail, CheckCircle, XCircle, ArrowRight, Info } from 'lucide-react';
+import { Trophy, Users, Calendar, Phone, CheckCircle, XCircle, ArrowRight, Info, MessageCircle } from 'lucide-react';
 
 export default function HomePage() {
   const { settings } = useAppContext();
+
+  const logoSrc = settings.league_logo || APP_LOGO_URL;
 
   return (
     <div className="min-h-screen">
@@ -12,7 +14,16 @@ export default function HomePage() {
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+            <img 
+              src={logoSrc} 
+              alt="SOQ.COMM Padel League" 
+              className="w-10 h-10 rounded-xl object-contain"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+                (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+              }}
+            />
+            <div className="hidden w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl items-center justify-center">
               <Trophy className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -63,8 +74,19 @@ export default function HomePage() {
 
             {/* Logo */}
             <div className="mb-8">
-              <div className="w-24 h-24 mx-auto bg-gradient-to-br from-green-400 to-emerald-600 rounded-3xl flex items-center justify-center shadow-xl shadow-green-200/50">
-                <Trophy className="w-12 h-12 text-white" />
+              <img 
+                src={logoSrc} 
+                alt="SOQ.COMM Padel League" 
+                className="w-28 h-28 mx-auto object-contain drop-shadow-xl"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const fallback = target.nextElementSibling as HTMLElement;
+                  if (fallback) fallback.style.display = 'flex';
+                }}
+              />
+              <div className="hidden w-28 h-28 mx-auto bg-gradient-to-br from-green-400 to-emerald-600 rounded-3xl items-center justify-center shadow-xl shadow-green-200/50">
+                <Trophy className="w-14 h-14 text-white" />
               </div>
             </div>
 
@@ -121,7 +143,7 @@ export default function HomePage() {
               {settings.min_players} - {settings.max_players} Pemain
             </h3>
             <p className="text-gray-500 text-sm">
-              Setiap tim harus memiliki minimal {settings.min_players} dan maksimal {settings.max_players} pemain terdaftar.
+              Setiap tim dapat mendaftarkan minimal {settings.min_players} dan maksimal {settings.max_players} pemain.
             </p>
           </div>
 
@@ -152,24 +174,20 @@ export default function HomePage() {
         <div className="glass-card rounded-2xl p-8 card-shadow">
           <h2 className="font-display font-bold text-xl text-gray-900 mb-4">Informasi Kontak Panitia</h2>
           <div className="flex flex-wrap gap-6">
-            <div className="flex items-center gap-3">
+            <a 
+              href={`https://wa.me/${CONTACT_WHATSAPP_LINK}`} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+            >
               <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <Phone className="w-5 h-5 text-green-600" />
+                <MessageCircle className="w-5 h-5 text-green-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">WhatsApp</p>
-                <p className="font-medium text-gray-900">+62 812-3456-7890</p>
+                <p className="font-medium text-gray-900">{CONTACT_WHATSAPP}</p>
               </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Mail className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Email</p>
-                <p className="font-medium text-gray-900">info@soqcomm-padel.com</p>
-              </div>
-            </div>
+            </a>
           </div>
           <p className="mt-4 text-sm text-gray-500">{settings.contact_info}</p>
         </div>
@@ -180,6 +198,9 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-sm text-gray-500">
             © 2026 SOQ.COMM PADEL LEAGUE. All rights reserved.
+          </p>
+          <p className="text-xs text-gray-400 mt-2">
+            Kontak Panitia: <a href={`https://wa.me/${CONTACT_WHATSAPP_LINK}`} target="_blank" rel="noopener noreferrer" className="text-green-600 hover:underline">{CONTACT_WHATSAPP}</a>
           </p>
           <Link to="/admin/login" className="inline-flex items-center gap-1 mt-2 text-xs text-gray-400 hover:text-green-600 transition-colors">
             Admin Panel <ArrowRight className="w-3 h-3" />

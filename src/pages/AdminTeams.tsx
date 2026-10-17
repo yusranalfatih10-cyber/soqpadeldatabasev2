@@ -8,7 +8,7 @@ export default function AdminTeams() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [editingTeam, setEditingTeam] = useState<any>(null);
-  const [editForm, setEditForm] = useState({ team_name: '', captain_name: '', captain_phone: '', city: '', is_active: true });
+  const [editForm, setEditForm] = useState({ team_name: '', captain_name: '', captain_phone: '', captain_email: '', city: '', is_active: true });
 
   useEffect(() => { loadTeams(); }, []);
 
@@ -26,6 +26,7 @@ export default function AdminTeams() {
       team_name: team.team_name || '',
       captain_name: team.captain_name || '',
       captain_phone: team.captain_phone || '',
+      captain_email: team.captain_email || '',
       city: team.city || '',
       is_active: team.is_active !== false,
     });
@@ -96,6 +97,7 @@ export default function AdminTeams() {
               <div className="text-sm text-gray-600 mb-4">
                 <p>Kapten: <span className="font-medium text-gray-900">{team.captain_name}</span></p>
                 <p>WA: {team.captain_phone}</p>
+                <p>Kota: {team.city}</p>
                 <p>Pemain: {team.player_count || 0}</p>
               </div>
               <div className="flex gap-2">

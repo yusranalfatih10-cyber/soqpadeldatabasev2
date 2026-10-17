@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { teamsApi } from '../services/api';
-import { ArrowLeft, Search, Loader2, AlertCircle, CheckCircle, Clock, XCircle, Edit } from 'lucide-react';
+import { APP_LOGO_URL, CONTACT_WHATSAPP, CONTACT_WHATSAPP_LINK } from '../App';
+import { ArrowLeft, Search, Loader2, AlertCircle, CheckCircle, Clock, XCircle, Edit, MessageCircle } from 'lucide-react';
 
 interface StatusData {
   registration_number: string;
@@ -79,8 +80,16 @@ export default function CheckStatusPage() {
         </Link>
 
         <div className="glass-card rounded-2xl p-6 sm:p-8 card-shadow">
-          <h1 className="font-display font-bold text-2xl text-gray-900 mb-2">Cek Status Pendaftaran</h1>
-          <p className="text-gray-500 text-sm mb-6">Masukkan nomor pendaftaran dan nomor WhatsApp kapten untuk melihat status.</p>
+          <div className="text-center mb-4">
+            <img 
+              src={APP_LOGO_URL} 
+              alt="SOQ.COMM Padel League" 
+              className="w-12 h-12 mx-auto object-contain mb-2"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+            />
+          </div>
+          <h1 className="font-display font-bold text-2xl text-gray-900 mb-2 text-center">Cek Status Pendaftaran</h1>
+          <p className="text-gray-500 text-sm mb-6 text-center">Masukkan nomor pendaftaran dan nomor WhatsApp kapten untuk melihat status.</p>
 
           <div className="space-y-4">
             <div>

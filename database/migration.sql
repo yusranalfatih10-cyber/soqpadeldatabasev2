@@ -16,17 +16,24 @@ CREATE TABLE IF NOT EXISTS app_settings (
 );
 
 -- Insert default settings
+-- Updated: min_players=1, max_players=20, contact info changed, logo added
 INSERT INTO app_settings (setting_key, setting_value) VALUES
     ('registration_open', 'true'),
     ('competition_name', 'SOQ.COMM PADEL LEAGUE 2026'),
-    ('min_players', '4'),
-    ('max_players', '8'),
+    ('min_players', '1'),
+    ('max_players', '20'),
     ('max_photo_size', '5'),
     ('max_logo_size', '5'),
-    ('contact_info', 'WhatsApp: +62 812-3456-7890 | Email: info@soqcomm-padel.com'),
-    ('league_logo', ''),
-    ('registration_info', 'Daftarkan tim Anda dan jadilah bagian dari kompetisi padel terbesar. Lengkapi informasi tim dan pemain dengan benar sebelum mengirimkan formulir pendaftaran.')
+    ('contact_info', 'WhatsApp: +62 814-1227-4044'),
+    ('league_logo', 'https://img.sanishtech.com/u/4139abe5f1ad93ba9a1f348e5b1a34da.jpg'),
+    ('registration_info', 'Daftarkan tim Anda dan jadilah bagian dari kompetisi padel. Lengkapi informasi tim dan pemain dengan benar sebelum mengirimkan formulir pendaftaran.')
 ON CONFLICT (setting_key) DO NOTHING;
+
+-- Update existing settings if migration is run on existing database
+UPDATE app_settings SET setting_value = '1' WHERE setting_key = 'min_players' AND setting_value = '4';
+UPDATE app_settings SET setting_value = '20' WHERE setting_key = 'max_players' AND setting_value = '8';
+UPDATE app_settings SET setting_value = 'WhatsApp: +62 814-1227-4044' WHERE setting_key = 'contact_info';
+UPDATE app_settings SET setting_value = 'https://img.sanishtech.com/u/4139abe5f1ad93ba9a1f348e5b1a34da.jpg' WHERE setting_key = 'league_logo';
 
 -- ============================================
 -- TABLE: admin_users

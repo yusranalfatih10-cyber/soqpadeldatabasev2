@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAppContext } from '../App';
+import { useAppContext, APP_LOGO_URL } from '../App';
 import { adminApi, isBackendConfigured } from '../services/api';
-import { Trophy, Lock, User, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Lock, User, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
 
 export default function AdminLoginPage() {
   const { setIsAdmin, setAdminToken } = useAppContext();
@@ -47,9 +47,15 @@ export default function AdminLoginPage() {
 
         <div className="glass-card rounded-2xl p-8 card-shadow">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 mx-auto bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-4">
-              <Trophy className="w-8 h-8 text-white" />
-            </div>
+            <img 
+              src={APP_LOGO_URL} 
+              alt="SOQ.COMM Padel League" 
+              className="w-16 h-16 mx-auto object-contain mb-4"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+              }}
+            />
             <h1 className="font-display font-bold text-2xl text-gray-900">Admin Panel</h1>
             <p className="text-gray-500 text-sm mt-1">SOQ.COMM PADEL LEAGUE</p>
           </div>

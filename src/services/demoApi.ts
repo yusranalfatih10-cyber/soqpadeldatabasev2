@@ -46,12 +46,12 @@ export const demoApi = {
     const teamName = formData.get('team_name') as string;
     const captainName = formData.get('captain_name') as string;
     const captainPhone = formData.get('captain_phone') as string;
-    const captainEmail = formData.get('captain_email') as string;
     const city = formData.get('city') as string;
     const logoFile = formData.get('team_logo') as File;
 
     const players: DemoPlayer[] = [];
-    for (let i = 0; i < 10; i++) {
+    // Support up to 20 players
+    for (let i = 0; i < 20; i++) {
       const fullName = formData.get(`players[${i}][full_name]`) as string;
       if (!fullName) continue;
       
@@ -78,7 +78,7 @@ export const demoApi = {
       team_name: teamName,
       captain_name: captainName,
       captain_phone: captainPhone,
-      captain_email: captainEmail || '',
+      captain_email: '',
       city: city,
       team_logo_url: logoFile ? URL.createObjectURL(logoFile) : '',
       registration_status: 'MENUNGGU_VERIFIKASI',
@@ -246,13 +246,13 @@ export const demoApi = {
       data: {
         registration_open: 'true',
         competition_name: 'SOQ.COMM PADEL LEAGUE 2026',
-        min_players: '4',
-        max_players: '8',
+        min_players: '1',
+        max_players: '20',
         max_photo_size: '5',
         max_logo_size: '5',
-        contact_info: 'WhatsApp: +62 812-3456-7890 | Email: info@soqcomm-padel.com',
-        league_logo: '',
-        registration_info: 'Daftarkan tim Anda dan jadilah bagian dari kompetisi padel terbesar. Lengkapi informasi tim dan pemain dengan benar sebelum mengirimkan formulir pendaftaran.',
+        contact_info: 'WhatsApp: +62 814-1227-4044',
+        league_logo: 'https://img.sanishtech.com/u/4139abe5f1ad93ba9a1f348e5b1a34da.jpg',
+        registration_info: 'Daftarkan tim Anda dan jadilah bagian dari kompetisi padel. Lengkapi informasi tim dan pemain dengan benar sebelum mengirimkan formulir pendaftaran.',
       },
     };
   },

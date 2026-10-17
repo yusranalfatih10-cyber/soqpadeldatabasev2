@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useAppContext } from '../App';
+import { useAppContext, APP_LOGO_URL } from '../App';
 import { Trophy, Users, Clock, CheckCircle, AlertTriangle, LayoutDashboard, FileText, UserCog, Settings, LogOut, ClipboardList } from 'lucide-react';
 
 export default function AdminLayout({ children, activePage }: { children: React.ReactNode; activePage: string }) {
@@ -26,9 +26,14 @@ export default function AdminLayout({ children, activePage }: { children: React.
       <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-white border-r border-gray-200">
         <div className="p-6 border-b border-gray-100">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
-              <Trophy className="w-5 h-5 text-white" />
-            </div>
+            <img 
+              src={APP_LOGO_URL} 
+              alt="SOQ.COMM" 
+              className="w-10 h-10 rounded-xl object-contain"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
             <div>
               <h1 className="font-display font-bold text-sm text-gray-900">SOQ.COMM</h1>
               <p className="text-xs text-gray-500">Admin Panel</p>
@@ -67,9 +72,14 @@ export default function AdminLayout({ children, activePage }: { children: React.
       <header className="lg:hidden bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
-              <Trophy className="w-4 h-4 text-white" />
-            </div>
+            <img 
+              src={APP_LOGO_URL} 
+              alt="SOQ.COMM" 
+              className="w-8 h-8 rounded-lg object-contain"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
             <span className="font-display font-bold text-sm">Admin Panel</span>
           </div>
           <button onClick={handleLogout} className="text-red-500 p-2">
